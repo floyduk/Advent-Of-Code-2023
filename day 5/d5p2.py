@@ -17,9 +17,7 @@ seeds = []                  # A list of lists containing the seed ranges
 #        XXXXXX
 #        XXXXXX
 
-# This function detects which kind of overlap this is and updtes input and output ranges accordingly
-# New input ranges are made for parts that lie outside the rule range. Output ranges are made for 
-# parts that lie within the rule range
+# This function detects which kind of overlap this is and returns a case number. 
 def find_overlap_type(rs, rr, s, r):
     if s < rs:                          # Start of range is below rule range
         if s+r-1 < rs:                  # End of range is below rule range
@@ -37,7 +35,10 @@ def find_overlap_type(rs, rr, s, r):
         return 2                        # Case 2
 
 # This function maps a source range to a destination range. What it does exactly depends on which
-# overlap case is found. 
+# overlap case is found but broadly speaking any part of the range the lies outside the rule range
+# is added back to the input_ranges and any part that overlaps with the rule range is converted to
+# the destination range and added to the output_ranges. And we go round and round until there's no
+# input left to process.
 def map_ranges(ruleset, ranges):
     input_ranges = ranges
     output_ranges = []
