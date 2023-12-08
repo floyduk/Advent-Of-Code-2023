@@ -6,12 +6,8 @@ input = input_file.read().split("\n")
 direction_list = input[0]
 directions_count = len(input[0]) # Used in the modulo operation later
 
-# Build a dictionary holding the network based on the input
-network = {}
-for line in input[2:]:
-    node_name = line.split("=")[0].strip()
-    connected_nodes = line.split(",")
-    network[node_name] = [connected_nodes[0][-3:], connected_nodes[1][1:4]]
+# Build a dictionary holding the network based on the input - dictionary comprehension just to show off
+network = {line[:3]:[line[7:10], line[12:15]] for line in input[2:]}
 
 current_node = "AAA"
 step = 0
