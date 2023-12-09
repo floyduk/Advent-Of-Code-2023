@@ -1,4 +1,4 @@
-# open and read the input file input a list of lists of integers
+# open and read the input file into a list of lists of integers
 sequences = [[int(n) for n in line.split()] for line in open("input.txt", "r").read().split("\n")]
 
 # Return the next value in the sequence. Uses recursion - see d9p2.py for an explanation of this
