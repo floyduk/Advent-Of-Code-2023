@@ -68,4 +68,5 @@ while [x, y] != [sx, sy]:
             [last_x, last_y, x, y] = [x, y, x, y+1]
             tunnel_coords.append([x, y])
 
+# The most distant point is 1/2 the length of the tunnel away
 print(int(len(tunnel_coords) / 2))
