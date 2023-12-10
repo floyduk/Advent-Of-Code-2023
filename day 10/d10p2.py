@@ -2,9 +2,8 @@
 input = open("input.txt", "r").read().split("\n")
 
 max_y, max_x = len(input), len(input[0])    # Limits of the input grid
-sx, sy = 0,0                                # Location of S
+sx, sy = 0, 0                                # Location of S
 tunnel_coords = []                          # The list of tunnel segments connected to S
-inside_spaces = []                          # The list of spaces inside the tunnel loop
 
 # Find coordinates of S
 for y in range(max_y):
