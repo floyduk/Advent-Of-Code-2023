@@ -1,5 +1,5 @@
 # open and read the input file into a list of strings
-input = open("sample.txt", "r").read().split("\n")
+input = open("input.txt", "r").read().split("\n")
 
 max_y, max_x = len(input), len(input[0])    # Limits of the input grid
 sx, sy = 0,0                                # Location of S
@@ -71,82 +71,56 @@ while [x, y] != [sx, sy]:
             tunnel_coords.append([x, y])
 
 # Search from x, y in a direction to the edge. Return the number of crossing pipes that are in the tunnel_coords list.
-def search_in_direction(x, y, d):
-    count = 0
+def clear_in_direction(x, y, d):
     if d == "u":    # up
+        if y == 0:
+            return True
         for search_y in range(y, -1, -1):
-            if [x, search_y] in tunnel_coords and input[search_y][x] in "-LFJ7":
-                count += 1
+            if [x, search_y] in tunnel_coords and input[search_y][x] in "|-LFJ7":
+                return False
     elif d == "d":    # down
+        if y == max_y-1:
+            return True
         for search_y in range(y, max_y, 1):
-            if [x, search_y] in tunnel_coords and input[search_y][x] in "-LFJ7":
-                count += 1
+            if [x, search_y] in tunnel_coords and input[search_y][x] in "|-LFJ7":
+                return False
     elif d == "l":    # left
+        if x == 0:
+            return True
         for search_x in range(x, -1, -1):
-            # if x == 14 and y == 3:
-            #     print(f"{search_x}, {y}: input[y][search_x]")
-            if [search_x, y] in tunnel_coords and input[y][search_x] in "|LFJ7":
-                count += 1
+            if [search_x, y] in tunnel_coords and input[y][search_x] in "|-LFJ7":
+                return False
     elif d == "r":    # right
+        if x == max_x-1:
+            return True
         for search_x in range(x, max_x, 1):
-            if [search_x, y] in tunnel_coords and input[y][search_x] in "|LFJ7":
-                count += 1
+            if [search_x, y] in tunnel_coords and input[y][search_x] in "|-LFJ7":
+                return False
 
-    # if [x, y] in [[14, 3], [7, 4], [8, 4], [9, 4], [7, 5], [8, 5], [6, 6], [14, 6]]:
-    #     print(f"Direction: {d}, Count: {count}")
+    return True
 
-    return count
 
-# Go through every location on the map searching in all 4 directions and counting 
-# how many pipes cross the path to the edge - note cross, not follow. If there is
-# an even number then this space is outside. An odd number means inside. Ignore 
-# locations that are part of the tunnel.
+inside_direction = [[" "] * max_x for y in range(max_y)]
+for [x, y] in tunnel_coords:
+    # print(f"{x}, {y}: {input[y][x]}")
+    if input[y][x] == "-":
+        if clear_in_direction(x, y, "u"):
+            inside_direction[y][x] = "d"
+        elif clear_in_direction(x, y, "d"):
+            inside_direction[y][x] = "u"
+    elif input[y][x] == "|":
+        print("FOUND |")
+        if clear_in_direction(x, y, "l"):
+            inside_direction[y][x] = "r"
+        elif clear_in_direction(x, y, "r"):
+            inside_direction[y][x] = "l"
+    elif input[y][x] == "L":
+        if clear_in_direction(x, y, "l") or clear_in_direction(x, y, "d"):
+            inside_direction[x][y] = "ur"
+
 for y in range(max_y):
-    for x in range(max_x):
-        if [x, y] not in tunnel_coords:
-            uc = search_in_direction(x, y, "u")
-            dc = search_in_direction(x, y, "d")
-            lc = search_in_direction(x, y, "l")
-            rc = search_in_direction(x, y, "r")
-            total_crosses = uc + dc + lc + rc
-            if total_crosses % 2 == 1:
-                inside_spaces.append([x, y])
+    print(f"{inside_direction[y]}")
 
-print(inside_spaces)
-print(f"Number of inside spaces: {len(inside_spaces)}")
 
-# wrong_answers = set(inside_spaces) - set([[14, 3], [7, 4], [8, 4], [9, 4], [7, 5], [8, 5], [6, 6], [14, 6]])
-# print(f"{wrong_answers}")
-
-print(f"TESTING INSIDE")
-for [x, y] in [[14, 3], [7, 4], [8, 4], [9, 4], [7, 5], [8, 5], [6, 6], [14, 6]]:
-    if [x, y] in tunnel_coords:
-        print(f"\n{x}, {y} is in tunnel coords")
-    else:
-        uc = search_in_direction(x, y, "u")
-        dc = search_in_direction(x, y, "d")
-        lc = search_in_direction(x, y, "l")
-        rc = search_in_direction(x, y, "r")
-        total_crosses = uc + dc + lc + rc
-        num_odd = 1 if uc % 2 != 0 else 0
-        num_odd += 1 if dc % 2 != 0 else 0
-        num_odd += 1 if lc % 2 != 0 else 0
-        num_odd += 1 if rc % 2 != 0 else 0
-    print(f"{x}, {y}\t{uc}\t{dc}\t{lc}\t{rc}\tTotal crosses: {total_crosses} Num_odd: {num_odd}")
-
-print(f"TESTING OUTSIDE")
-# [[0, 0], [0, 1], [0, 2], [3, 2], [4, 4], [0, 5], [0, 6], [0, 7], [0, 8], [0, 9], [9, 8]]
-for [x, y] in [[3, 2], [4, 4], [9, 8]]:
-    if [x, y] in tunnel_coords:
-        print(f"\n{x}, {y} is in tunnel coords")
-    else:
-        uc = search_in_direction(x, y, "u")
-        dc = search_in_direction(x, y, "d")
-        lc = search_in_direction(x, y, "l")
-        rc = search_in_direction(x, y, "r")
-        total_crosses = uc + dc + lc + rc
-        num_odd = 1 if uc % 2 != 0 else 0
-        num_odd += 1 if dc % 2 != 0 else 0
-        num_odd += 1 if lc % 2 != 0 else 0
-        num_odd += 1 if rc % 2 != 0 else 0
-    print(f"{x}, {y}\t{uc}\t{dc}\t{lc}\t{rc}\tTotal crosses: {total_crosses} Num_odd: {num_odd}")
+# CORRECT INSIDE: [[14, 3], [7, 4], [8, 4], [9, 4], [7, 5], [8, 5], [6, 6], [14, 6]]
+# CORRECT OUTSIDE: [[0, 0], [0, 1], [0, 2], [3, 2], [4, 4], [0, 5], [0, 6], [0, 7], [0, 8], [0, 9], [9, 8]]
