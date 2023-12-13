@@ -30,13 +30,10 @@ for line in input:
     if line == "":
         # This is the end of a map - process it now
         # For simplicity sake I added a blank line at the end of the input files so that we don't miss the last map
-        print("\n".join(map))
         horizontal_mirror_pos = find_horizontal_mirror(map)
-        print(f"Horizontal: {horizontal_mirror_pos}")
         total += horizontal_mirror_pos * 100
         if horizontal_mirror_pos == 0:
             vertical_mirror_pos = find_horizontal_mirror(rotate_map(map))
-            print(f"Vertical: {vertical_mirror_pos}")
             total += vertical_mirror_pos
 
         # Clear map ready for the next one

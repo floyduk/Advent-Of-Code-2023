@@ -21,9 +21,7 @@ def rotate_map(map):
 def find_horizontal_mirror(map):
     for i in range(len(map)-1):
         differences = 0
-        print(f"Range is {i+1} {len(map)-1-i} : {min(i+1, len(map)-1-i)}")
         for j in range(0, min(i+1, len(map)-1-i)):
-            print(f"row {i-j+1} vs row {i+1+j+1}: map[{i}-{j}] = {map[i-j]} vs map[{i}+1+{j}] = {map[i+1+j]}")
             differences += count_diff_chars(map[i-j],map[i+1+j])
 
         # if sum([1 for j in range(0, min(i, len(map)-1-i)) if map[i-j] != map[i+1+j]]) == 0:
@@ -44,13 +42,10 @@ for line in input:
     if line == "":
         # This is the end of a map - process it now
         # For simplicity sake I added a blank line at the end of the input files so that we don't miss the last map
-        print("\n".join(map))
         horizontal_mirror_pos = find_horizontal_mirror(map)
-        print(f"Horizontal: {horizontal_mirror_pos}")
         total += horizontal_mirror_pos * 100
         if horizontal_mirror_pos == 0:
             vertical_mirror_pos = find_horizontal_mirror(rotate_map(map))
-            print(f"Vertical: {vertical_mirror_pos}")
             total += vertical_mirror_pos
 
         # Clear map ready for the next one
