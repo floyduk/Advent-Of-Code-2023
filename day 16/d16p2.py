@@ -1,0 +1,63 @@
+# open and read the input file into a list of strings
+input = open("input.txt", "r").read().split("\n")
+max_y, max_x = len(input), len(input[0])
+
+# Lookup table of what happens if a beam hits a mirror or prism depending on the direciton of the beam
+interactions = {
+    '.': {'n': ['n'], 's': ['s'], 'e': ['e'], 'w': ['w']},
+    '/': {'n': ['e'], 's': ['w'], 'e': ['n'], 'w': ['s']},
+    '\\':{'n': ['w'], 's': ['e'], 'e': ['s'], 'w': ['n']},
+    '-': {'n': ['e', 'w'], 's': ['e', 'w'], 'e': ['e'], 'w': ['w']},
+    '|': {'n': ['n'], 's': ['s'], 'e': ['n', 's'], 'w': ['n', 's']},
+}
+
+def get_energized(sx, sy, sd):
+    energized = set()           # A set of energized grid locations
+    beams = [[sx,sy,sd]]        # A list of startnig beam locations and directions
+    loop_detect = []            # A list of locations and directions that we've visited before
+
+    # Loop through all the beams in the list checking the grid and then moving on. We pop the beam off
+    # the list and then append 1 or 2 new beams onto the list as long as the new beam is in-bounds.
+    while beams:
+        beam = beams.pop()
+        [x, y, d] = beam
+
+        # If a beam has been at this location and travelling in this direction before then it'll do the
+        # same again so don't bother doing it again. This prevents loops.
+        if [x, y, d] not in loop_detect:
+            loop_detect.append([x, y, d])
+
+            # Take note that this location is energized. Note that this is a set and therefore cannot contain duplicates
+            energized.add((x, y))
+
+            # Lookup what to do whtn a beam hits this char at this direction. Calculate the new x and y (nx, ny).
+            # This lookup results in a list because some chars split the beam and preoducts more than one output beam.
+            for nd in interactions[input[y][x]][d]:
+                nx, ny = x, y
+                if nd == "n":
+                    ny -= 1
+                elif nd == "s":
+                    ny += 1
+                elif nd == "w":
+                    nx -= 1
+                elif nd == "e":
+                    nx += 1
+                
+                # If this new x, y, d (nx, ny, nd) is in bounds then add this new beam
+                if 0 <= nx < max_x and 0 <= ny < max_y:
+                    beams.append([nx, ny, nd])
+
+    # Return the total grid spaces energized
+    return len(energized)
+
+# Try every edge space with the beam facing inwards
+energized_count = []
+for i in range(max_x):
+    energized_count.append(get_energized(i, 0, 's'))
+    energized_count.append(get_energized(i, max_y-1, 'n'))
+for i in range(max_y):
+    energized_count.append(get_energized(0, i, 'e'))
+    energized_count.append(get_energized(max_x-1, i, 'w'))
+
+# Print the result
+print(max(energized_count))
