@@ -13,9 +13,6 @@ def process_workflow(workflow, part):
     for rule in workflows[workflow]:
         if rule[1] == '':
             return process_workflow(rule[3], part)
-        elif rule[1] == '=':
-            if part[rule[0]] == rule[2]:
-                return process_workflow(rule[3], part)
         elif rule[1] == '>':
             if part[rule[0]] > rule[2]:
                 return process_workflow(rule[3], part)
